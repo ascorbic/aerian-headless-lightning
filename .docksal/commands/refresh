@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#: exec_target = cli
+
+## Initialize stack and site (full reset)
+##
+## Usage: fin refresh [environment id]
+
+ENVIRONMENT=${1:-test}
+
+cd /var/www/${DOCROOT}
+
+DBFILE="/tmp/site.${TERMINUS_ENVIRONMENT}.tar.gz"
+if [ ! -f $DBFILE ] || [ ! -z $(find $DBFILE -mmin +600) ] ; then
+
+    if [ ! -f $DBFILE ]; then
+        echo "Database file does not exist."
+    elif [ ! -z $(find $DBFILE -mmin +60) ]; then
+        echo "Database file is older then 10 hours"
+    fi
+
+    echo "Exporting ${TERMINUS_ENVIRONMENT} database..."
+    terminus auth:login --machine-token=${SECRET_TERMINUS_TOKEN}
+    terminus backup:create ${TERMINUS_SITE}.${TERMINUS_ENVIRONMENT} --element=db
+    terminus backup:get ${TERMINUS_SITE}.${TERMINUS_ENVIRONMENT} --element=db --to=$DBFILE
+fi
+
+echo "Truncating local database..."
+drush sql-drop -y
+
+echo "Importing export to local database..."
+zcat $DBFILE | drush sql-cli
+
+echo "Update code through composer"
+cd ${PROJECT_ROOT}
+composer update
+
+echo "Update drupal config"
+cd /var/www/${DOCROOT}
+drush updb -y
+drush cim -y
+
+echo 'get login link'
+drush uli

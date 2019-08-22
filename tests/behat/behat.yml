@@ -1,0 +1,31 @@
+# Local overrides to the default profile
+default:
+suites:
+  default:
+    paths:
+      features: "%behat.paths.base%/features"
+    contexts:
+      - FeatureContext
+      - Drupal\DrupalExtension\Context\DrupalContext
+      - Drupal\DrupalExtension\Context\MinkContext
+  extensions:
+    Behat\MinkExtension:
+      # URL of the site when accessed locally.
+      base_url: http://web
+      # Configure browser to be used. Browser must be available on wd_host.
+      # Stick with chrome by default. It's 2x faster than firefox or phantomjs (your results may vary).
+      browser_name: chrome
+      files_path: './data-files'
+      selenium2:
+        wd_host: http://browser:4444/wd/hub
+        capabilities: { "browser": "chrome", "version": "*" }
+    Drupal\DrupalExtension:
+      drupal:
+        # Local site docroot.
+        drupal_root: '/var/www/web'
+      drush:
+        # Local site docroot.
+        root: '/var/www/web'
+
+imports:
+  - behat.common.yml
