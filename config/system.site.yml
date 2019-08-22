@@ -1,0 +1,14 @@
+uuid: 64b019c3-862f-41ff-b511-57d6870e4b62
+name: aerian-headless-lightning
+mail: matt.kane@aerian.com
+slogan: ''
+page:
+  403: /user/login
+  404: ''
+  front: /frontpage
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en
+_core:
+  default_config_hash: yXadRE77Va-G6dxhd2kPYapAvbnSvTF6hO4oXiOEynI
